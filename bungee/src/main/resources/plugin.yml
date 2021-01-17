@@ -1,0 +1,4 @@
+name: PluginMessageManager
+main: me.glauz.pluginmessagemanager.PluginMessageManager
+version: 1.0
+author: G-Lauz
