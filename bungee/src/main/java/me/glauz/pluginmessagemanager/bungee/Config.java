@@ -1,4 +1,4 @@
-package me.glauz.pluginmessagemanager;
+package me.glauz.pluginmessagemanager.bungee;
 
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.config.Configuration;
@@ -7,7 +7,6 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Config {
     private final PluginMessageManager plugin;
