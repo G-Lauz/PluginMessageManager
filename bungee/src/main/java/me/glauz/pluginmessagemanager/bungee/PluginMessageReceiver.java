@@ -27,7 +27,7 @@ public class PluginMessageReceiver implements Listener {
      *   <li>Data length : Short</li>
      *   <li>The actual data : byte[]</li>
      * </ol>
-     * Called when their is an incoming Plugin Channel message over the channel parameter configure in the config.yml.
+     * Called when their is an incoming Plugin Channel message over the channel parameter configure in the config.properties.
      *
      * Possible action:
      * <ul>

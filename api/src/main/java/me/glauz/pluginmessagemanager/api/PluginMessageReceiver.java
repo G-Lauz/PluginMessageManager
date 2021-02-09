@@ -2,6 +2,7 @@ package me.glauz.pluginmessagemanager.api;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.glauz.pluginmessagemanager.config.GlobalConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -15,10 +16,11 @@ public class PluginMessageReceiver implements PluginMessageListener {
 
     private static PluginMessageReceiver instance;
     private Plugin plugin;
+    private String channel;
 
     private PluginMessageReceiver() {
-        // fetch channel in the bungee plugin configuration file
-
+        // load global's configuration
+        channel = GlobalConfig.getInstance().getChannel();
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -35,7 +37,7 @@ public class PluginMessageReceiver implements PluginMessageListener {
     }
 
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("plugin:message:manager"))
+        if (!channel.equals(this.channel))
             return;
     }
 
