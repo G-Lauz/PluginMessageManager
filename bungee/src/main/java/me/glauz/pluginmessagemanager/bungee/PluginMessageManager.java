@@ -1,4 +1,4 @@
-package me.glauz.pluginmessagemanager;
+package me.glauz.pluginmessagemanager.bungee;
 
 import net.md_5.bungee.api.plugin.Plugin;
 

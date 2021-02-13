@@ -1,4 +1,4 @@
-package me.glauz.pluginmessagemanager;
+package me.glauz.pluginmessagemanager.bungee;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -10,8 +10,6 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.Set;
 
 public class PluginMessageReceiver implements Listener {
 
@@ -29,7 +27,7 @@ public class PluginMessageReceiver implements Listener {
      *   <li>Data length : Short</li>
      *   <li>The actual data : byte[]</li>
      * </ol>
-     * Called when their is an incoming Plugin Channel message over the channel parameter configure in the config.yml.
+     * Called when their is an incoming Plugin Channel message over the channel parameter configure in the config.properties.
      *
      * Possible action:
      * <ul>

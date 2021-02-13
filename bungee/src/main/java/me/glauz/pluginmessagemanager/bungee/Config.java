@@ -1,13 +1,13 @@
-package me.glauz.pluginmessagemanager;
+package me.glauz.pluginmessagemanager.bungee;
 
 import com.google.common.io.ByteStreams;
+import me.glauz.pluginmessagemanager.config.GlobalConfig;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Config {
     private final PluginMessageManager plugin;
@@ -19,6 +19,10 @@ public class Config {
     }
 
     public void loadConfigFile() {
+        // Load global's configuration
+        channel = GlobalConfig.getInstance().getChannel();
+
+        // Load plugin's configuration
         if (!plugin.getDataFolder().exists())
             plugin.getDataFolder().mkdir();
 
@@ -30,8 +34,6 @@ public class Config {
         Configuration config;
         try {
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
-
-            channel = config.getString("channel");
 
             List<?> serverGroup =  config.getList("group");
             group = new Hashtable();

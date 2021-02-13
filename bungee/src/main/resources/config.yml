@@ -1,6 +1,3 @@
-# The channel should be lowercase and should contain ":".
-channel: plugin:message:manager
-
 # Here you can create your server's group.
 # Be sure to use the name of the server describe in your BungeeCord configuration
 # Structure:

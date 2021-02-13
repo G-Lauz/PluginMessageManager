@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>pluginmessagemanager</artifactId>
+        <artifactId>PluginMessageManager</artifactId>
         <groupId>me.glauz</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>bungee</artifactId>
+    <artifactId>PluginMessageManager-Bungee</artifactId>
 
     <repositories>
         <repository>
@@ -33,6 +33,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>me.glauz</groupId>
+            <artifactId>PluginMessageManager-Config</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
