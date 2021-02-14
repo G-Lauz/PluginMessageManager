@@ -1,16 +1,13 @@
 package me.glauz.pluginmessagemanager.api;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
+import me.glauz.pluginmessagemanager.protocole.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
+import static org.bukkit.Bukkit.getLogger;
+import static org.bukkit.Bukkit.getServer;
 
 public class PluginMessageReceiver implements PluginMessageListener {
 
@@ -19,8 +16,13 @@ public class PluginMessageReceiver implements PluginMessageListener {
     private String channel;
 
     private PluginMessageReceiver() {
+        checkIfBungee();
+
         // load global's configuration
         channel = GlobalConfig.getInstance().getChannel();
+
+        getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -36,29 +38,50 @@ public class PluginMessageReceiver implements PluginMessageListener {
         this.plugin = plugin;
     }
 
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals(this.channel))
-            return;
+    private void checkIfBungee() {
+        if (!getServer().spigot().getConfig().getConfigurationSection("settings").getBoolean("settings.bungeecord")) {
+            getLogger().severe( "This server is not BungeeCord." );
+            getLogger().severe( "If the server is already hooked to BungeeCord, please enable it into your spigot.yml aswell." );
+            getLogger().severe( "Plugin disabled!" );
+            getServer().getPluginManager().disablePlugin(this.plugin);
+        }
     }
 
-    private void sendPluginMessage(Player player, String channel, ArrayList<String> specification, String message) {
-        ByteArrayDataOutput output = ByteStreams.newDataOutput();
-
-        specification.forEach(params -> output.writeUTF(params));
-
-        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-        DataOutputStream msgout = new DataOutputStream(msgbytes);
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+        if (!channel.equals(this.channel))
+            return;
 
         try {
-            msgout.writeUTF(message);
+            Packet packet = Protocole.deconstructPacket(bytes);
 
-            output.writeShort(msgbytes.toByteArray().length);
-            output.write(msgbytes.toByteArray());
+            if (packet.serversGroup.equalsIgnoreCase("MySubChannel")) {
+                // TODO
+            }
 
-            player.sendPluginMessage(this.plugin, channel, output.toByteArray());
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (DeconstructPacketErrorException deconstructPacketErrorException) {
+            getLogger().severe(deconstructPacketErrorException.getStackTrace().toString());
         }
+    }
+
+    private void sendPluginMessage(Player player, String channel, Packet packet) throws SendPluginMessageErrorException {
+        try {
+            byte[] bytes = Protocole.constructPacket(packet);
+            player.sendPluginMessage(this.plugin, channel, bytes);
+
+        } catch (InvalidPacketException invalidPacketException) {
+            throw new SendPluginMessageErrorException(invalidPacketException.getMessage());
+        } catch (ConstructPacketErrorException constructPacketErrorException) {
+            throw new SendPluginMessageErrorException(constructPacketErrorException.getMessage());
+        }
+    }
+
+    public void broadcast(Player player, String serversGroup, String message) throws SendPluginMessageErrorException {
+        Packet packet = new Packet();
+        packet.serversGroup = serversGroup;
+        packet.params.add("Broadcast");
+        packet.data = message;
+
+        this.sendPluginMessage(player, this.channel, packet);
     }
 }

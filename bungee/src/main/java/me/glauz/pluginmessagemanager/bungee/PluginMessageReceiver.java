@@ -1,15 +1,13 @@
 package me.glauz.pluginmessagemanager.bungee;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
+import me.glauz.pluginmessagemanager.protocole.Packet;
+import me.glauz.pluginmessagemanager.protocole.Protocole;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 
 public class PluginMessageReceiver implements Listener {
 
@@ -41,19 +39,11 @@ public class PluginMessageReceiver implements Listener {
         if (!event.getTag().equalsIgnoreCase(plugin.getConfig().getChannel()))
             return;
 
-        ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
-        String groupServer = in.readUTF();
+        Packet packet = Protocole.deconstructPacket(event.getData());
 
-        if (plugin.getConfig().getGroup().containsKey(groupServer)) {
+        if (plugin.getConfig().getGroup().containsKey(packet.serversGroup)) {
 
-            String action = in.readUTF();
-
-            short len = in.readShort();
-            byte[] msgbytes = new byte[len];
-            in.readFully(msgbytes);
-
-            DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-            String data = msgin.readUTF();
+            String action = packet.params.get(0);
 
             // The receiver is a ProxiedPlayer when a server talks to the proxy
             if (event.getReceiver() instanceof ProxiedPlayer) {

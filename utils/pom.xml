@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>PluginMessageManager-API</artifactId>
+    <artifactId>PluginMessageManager-Utils</artifactId>
     <build>
         <plugins>
             <plugin>
@@ -22,27 +22,12 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <!-- This adds the Spigot Maven repository to the build -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <!--This adds the Spigot API artifact to the build -->
         <dependency>
-            <groupId>me.glauz</groupId>
-            <artifactId>PluginMessageManager-Utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
