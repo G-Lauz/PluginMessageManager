@@ -1,5 +1,6 @@
 package me.glauz.pluginmessagemanager.api;
 
+import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
 import me.glauz.pluginmessagemanager.protocole.*;
 import org.bukkit.entity.Player;
@@ -79,7 +80,7 @@ public class PluginMessageReceiver implements PluginMessageListener {
     public void broadcast(Player player, String serversGroup, String message) throws SendPluginMessageErrorException {
         Packet packet = new Packet();
         packet.serversGroup = serversGroup;
-        packet.params.add("Broadcast");
+        packet.params.add(PluginMessageManagerActions.BROADCAST.toString());
         packet.data = message;
 
         this.sendPluginMessage(player, this.channel, packet);

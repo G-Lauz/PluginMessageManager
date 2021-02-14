@@ -1,5 +1,6 @@
 package me.glauz.pluginmessagemanager.bungee;
 
+import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.protocole.Packet;
 import me.glauz.pluginmessagemanager.protocole.Protocole;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -51,8 +52,8 @@ public class PluginMessageReceiver implements Listener {
 
                 // TODO
                 // Handle the action
-                switch (action) {
-                    case "Broadcast":
+                switch (PluginMessageManagerActions.valueOf(action)) {
+                    case BROADCAST:
                         // TODO
                         break;
 
