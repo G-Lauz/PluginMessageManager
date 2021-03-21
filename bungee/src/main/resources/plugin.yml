@@ -1,4 +1,4 @@
 name: PluginMessageManager
-main: me.glauz.pluginmessagemanager.PluginMessageManager
+main: me.glauz.pluginmessagemanager.bungee.PluginMessageManager
 version: 1.0
 author: G-Lauz

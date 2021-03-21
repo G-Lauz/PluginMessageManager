@@ -55,6 +55,8 @@ public class PluginMessageReceiver implements Listener {
                 switch (PluginMessageManagerActions.valueOf(action)) {
                     case BROADCAST:
                         // TODO
+                        System.out.println("#1 The receiver is a ProxiedPlayer:");
+                        System.out.println(packet.data);
                         break;
 
                     default:
@@ -68,6 +70,16 @@ public class PluginMessageReceiver implements Listener {
 
                 // TODO
                 // Handle the action
+                switch (PluginMessageManagerActions.valueOf(action)) {
+                    case BROADCAST:
+                        // TODO
+                        System.out.println("#2 The receiver is a server:");
+                        System.out.println(packet.data);
+                        break;
+
+                    default:
+                        throw new Exception("Non-existent action");
+                }
             }
         }
     }
