@@ -33,7 +33,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>me.glauz.pluginmessagemanager</include>
+                                    <include>me.glauz.pluginmessagemanager:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
