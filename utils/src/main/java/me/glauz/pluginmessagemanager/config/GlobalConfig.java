@@ -22,7 +22,7 @@ public class GlobalConfig {
         return instance;
     }
 
-    private void loadConfigFile() throws IOException {
+    public void loadConfigFile() throws IOException {
         InputStream configFile = null;
         Properties properties = null;
 
@@ -35,9 +35,9 @@ public class GlobalConfig {
             this.channel = properties.getProperty("channel");
 
         } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
+            throw fnfe;
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            throw ioe;
         } finally {
             configFile.close();
         }

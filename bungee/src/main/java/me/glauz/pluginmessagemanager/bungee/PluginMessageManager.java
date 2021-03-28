@@ -2,6 +2,8 @@ package me.glauz.pluginmessagemanager.bungee;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.io.IOException;
+
 
 public class PluginMessageManager extends Plugin {
 
@@ -12,10 +14,15 @@ public class PluginMessageManager extends Plugin {
         super.onEnable();
 
         config = new Config(this);
-        config.loadConfigFile();
+        try {
+            config.loadConfigFile();
 
-        getProxy().registerChannel(config.getChannel());
-        getProxy().getPluginManager().registerListener(this, new PluginMessageReceiver(this));
+            getProxy().registerChannel(config.getChannel());
+            getProxy().getPluginManager().registerListener(this, new PluginMessageReceiver(this));
+        } catch (IOException err) {
+            getLogger().severe("Unable to load the configuration. The plugin won't respond:");
+            getLogger().severe(err.getMessage());
+        }
     }
 
     public Config getConfig() {

@@ -18,9 +18,15 @@ public class Config {
         this.plugin = plugin;
     }
 
-    public void loadConfigFile() {
+    public void loadConfigFile() throws IOException{
         // Load global's configuration
-        channel = GlobalConfig.getInstance().getChannel();
+        try {
+            GlobalConfig globalConfig = GlobalConfig.getInstance();
+            globalConfig.loadConfigFile();
+            this.channel = globalConfig.getChannel();
+        } catch (IOException err) {
+            throw err;
+        }
 
         // Load plugin's configuration
         if (!plugin.getDataFolder().exists())
