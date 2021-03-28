@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public class Packet {
     public String serversGroup = null;
-    public ArrayList<String> params = null;
+    public ArrayList<String> params = new ArrayList<String>();
     public String data = null;
 }
