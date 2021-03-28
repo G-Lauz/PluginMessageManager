@@ -12,7 +12,7 @@ public class Protocole {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
 
         if (packet.serversGroup == null)
-            throw new InvalidPacketException("packet.subChannel is null");
+            throw new InvalidPacketException("packet.serversGroup is null");
 
         output.writeUTF(packet.serversGroup);
 

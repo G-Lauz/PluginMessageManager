@@ -13,6 +13,7 @@ import java.io.IOException;
 import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
+
 public class PluginMessageReceiver implements PluginMessageListener {
 
     private static PluginMessageReceiver instance;
@@ -36,6 +37,9 @@ public class PluginMessageReceiver implements PluginMessageListener {
         this.plugin = plugin;
 
         checkIfBungee();
+        if (!getServer().getPluginManager().isPluginEnabled(this.plugin)) {
+            return;
+        }
 
         // load global's configuration
         GlobalConfig globalConfig = GlobalConfig.getInstance();
@@ -63,6 +67,12 @@ public class PluginMessageReceiver implements PluginMessageListener {
         try {
             Packet packet = Protocole.deconstructPacket(bytes);
 
+            System.out.println("PACKET RECEIVED: ");
+            System.out.println("Server group: " + packet.serversGroup);
+            System.out.println("Params: ");
+            packet.params.forEach(param -> System.out.println("\t" + param));
+            System.out.println("Data: " + packet.data);
+
             if (packet.serversGroup.equalsIgnoreCase("MySubChannel")) {
                 // TODO
             }
@@ -72,10 +82,11 @@ public class PluginMessageReceiver implements PluginMessageListener {
         }
     }
 
-    private void sendPluginMessage(Player player, String channel, Packet packet) throws SendPluginMessageErrorException {
+    private void sendPluginMessage(Player player, Packet packet) throws SendPluginMessageErrorException {
         try {
             byte[] bytes = Protocole.constructPacket(packet);
-            player.sendPluginMessage(this.plugin, channel, bytes);
+
+            player.sendPluginMessage(this.plugin, this.channel, bytes);
 
         } catch (InvalidPacketException invalidPacketException) {
             throw new SendPluginMessageErrorException(invalidPacketException.getMessage());
@@ -90,6 +101,6 @@ public class PluginMessageReceiver implements PluginMessageListener {
         packet.params.add(PluginMessageManagerActions.BROADCAST.toString());
         packet.data = message;
 
-        this.sendPluginMessage(player, this.channel, packet);
+        this.sendPluginMessage(player, packet);
     }
 }

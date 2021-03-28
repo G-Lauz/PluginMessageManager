@@ -1,6 +1,6 @@
-#PluginMessageManager
+# PluginMessageManager
 
-###Use the API
+### Use the API
 Add the following into you pom.xml:
 ```xml
 <repository>
