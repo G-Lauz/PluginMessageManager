@@ -2,10 +2,13 @@ package me.glauz.pluginmessagemanager.api;
 
 import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
+import me.glauz.pluginmessagemanager.config.LoadConfigFileException;
 import me.glauz.pluginmessagemanager.protocole.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import java.io.IOException;
 
 import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
@@ -17,8 +20,7 @@ public class PluginMessageReceiver implements PluginMessageListener {
     private String channel;
 
     private PluginMessageReceiver() {
-        // load global's configuration
-        channel = GlobalConfig.getInstance().getChannel();
+
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -30,10 +32,21 @@ public class PluginMessageReceiver implements PluginMessageListener {
         return instance;
     }
 
-    public void initialize(Plugin plugin) {
+    public void initialize(Plugin plugin) throws IOException, LoadConfigFileException{
         this.plugin = plugin;
 
         checkIfBungee();
+
+        // load global's configuration
+        try {
+            GlobalConfig globalConfig = GlobalConfig.getInstance();
+            globalConfig.loadConfigFile();
+            this.channel = globalConfig.getChannel();
+        } catch (LoadConfigFileException lcfe) {
+            throw lcfe;
+        } catch (IOException ioe) {
+            throw ioe;
+        }
 
         getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);

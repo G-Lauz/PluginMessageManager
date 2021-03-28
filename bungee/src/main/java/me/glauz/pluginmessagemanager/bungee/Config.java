@@ -2,6 +2,7 @@ package me.glauz.pluginmessagemanager.bungee;
 
 import com.google.common.io.ByteStreams;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
+import me.glauz.pluginmessagemanager.config.LoadConfigFileException;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -18,14 +19,16 @@ public class Config {
         this.plugin = plugin;
     }
 
-    public void loadConfigFile() throws IOException{
+    public void loadConfigFile() throws IOException, LoadConfigFileException {
         // Load global's configuration
         try {
             GlobalConfig globalConfig = GlobalConfig.getInstance();
             globalConfig.loadConfigFile();
             this.channel = globalConfig.getChannel();
-        } catch (IOException err) {
-            throw err;
+        } catch (LoadConfigFileException lcfe) {
+            throw lcfe;
+        } catch (IOException ioe) {
+            throw ioe;
         }
 
         // Load plugin's configuration
