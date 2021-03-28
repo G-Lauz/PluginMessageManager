@@ -38,15 +38,9 @@ public class PluginMessageReceiver implements PluginMessageListener {
         checkIfBungee();
 
         // load global's configuration
-        try {
-            GlobalConfig globalConfig = GlobalConfig.getInstance();
-            globalConfig.loadConfigFile();
-            this.channel = globalConfig.getChannel();
-        } catch (LoadConfigFileException lcfe) {
-            throw lcfe;
-        } catch (IOException ioe) {
-            throw ioe;
-        }
+        GlobalConfig globalConfig = GlobalConfig.getInstance();
+        globalConfig.loadConfigFile();
+        this.channel = globalConfig.getChannel();
 
         getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);

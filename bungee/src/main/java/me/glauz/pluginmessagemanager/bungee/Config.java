@@ -21,15 +21,9 @@ public class Config {
 
     public void loadConfigFile() throws IOException, LoadConfigFileException {
         // Load global's configuration
-        try {
-            GlobalConfig globalConfig = GlobalConfig.getInstance();
-            globalConfig.loadConfigFile();
-            this.channel = globalConfig.getChannel();
-        } catch (LoadConfigFileException lcfe) {
-            throw lcfe;
-        } catch (IOException ioe) {
-            throw ioe;
-        }
+        GlobalConfig globalConfig = GlobalConfig.getInstance();
+        globalConfig.loadConfigFile();
+        this.channel = globalConfig.getChannel();
 
         // Load plugin's configuration
         if (!plugin.getDataFolder().exists())
