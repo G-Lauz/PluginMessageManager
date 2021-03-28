@@ -17,13 +17,8 @@ public class PluginMessageReceiver implements PluginMessageListener {
     private String channel;
 
     private PluginMessageReceiver() {
-        checkIfBungee();
-
         // load global's configuration
         channel = GlobalConfig.getInstance().getChannel();
-
-        getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -37,6 +32,11 @@ public class PluginMessageReceiver implements PluginMessageListener {
 
     public void initialize(Plugin plugin) {
         this.plugin = plugin;
+
+        checkIfBungee();
+
+        getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);
     }
 
     private void checkIfBungee() {
