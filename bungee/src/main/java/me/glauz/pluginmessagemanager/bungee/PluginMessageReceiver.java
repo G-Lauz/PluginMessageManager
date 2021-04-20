@@ -9,12 +9,14 @@ import me.glauz.pluginmessagemanager.protocole.InvalidPacketException;
 import me.glauz.pluginmessagemanager.protocole.Packet;
 import me.glauz.pluginmessagemanager.protocole.Protocole;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -45,25 +47,6 @@ public class PluginMessageReceiver implements Listener {
      */
     @EventHandler
     public void on(PluginMessageEvent event) throws Exception{
-        System.out.println("EVENT RECEIVED: " + event.getTag());
-
-        Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
-        if(networkPlayers == null || networkPlayers.isEmpty())
-            return;
-        Packet tmp = new Packet();
-        tmp.serversGroup = "TEST";
-        tmp.params.add(PluginMessageManagerActions.BROADCAST.toString());
-        tmp.data = "Hello World";
-        networkPlayers.stream().forEach(proxiedPlayer -> {
-            try {
-                proxiedPlayer.getServer().getInfo().sendData("pluginmessagemanager", Protocole.constructPacket(tmp));
-            } catch (InvalidPacketException e) {
-                e.printStackTrace();
-            } catch (ConstructPacketErrorException e) {
-                e.printStackTrace();
-            }
-        });
-
         if (!event.getTag().equalsIgnoreCase(plugin.getConfig().getChannel()))
             return;
 
@@ -84,6 +67,7 @@ public class PluginMessageReceiver implements Listener {
                         // TODO
                         System.out.println("#1 The receiver is a ProxiedPlayer:");
                         System.out.println(packet.data);
+                        onBroadcast((Server) event.getSender(), packet);
                         break;
 
                     default:
@@ -109,5 +93,24 @@ public class PluginMessageReceiver implements Listener {
                 }
             }
         }
+    }
+
+    private void onBroadcast(Server sender, Packet packet) {
+        System.out.println(sender.getInfo().getName());
+
+        this.plugin.getConfig().getGroup().forEach((serverGroup, servers) -> {
+            if (serverGroup.equals(packet.serversGroup)) {
+                ((ArrayList) servers).forEach(server -> {
+                    try {
+                        this.plugin.getProxy().getServerInfo((String) server).sendData(
+                                this.plugin.getConfig().getChannel(), Protocole.constructPacket(packet));
+                    } catch (InvalidPacketException e) {
+                        e.printStackTrace();
+                    } catch (ConstructPacketErrorException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        });
     }
 }
