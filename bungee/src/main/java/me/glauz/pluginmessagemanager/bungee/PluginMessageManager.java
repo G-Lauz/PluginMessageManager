@@ -14,10 +14,8 @@ public class PluginMessageManager extends Plugin {
         try {
             config.loadConfigFile();
 
-            System.out.println("REGISTER CHANNEL: " + config.getChannel());
             getProxy().getPluginManager().registerListener(this, new PluginMessageReceiver(this));
             getProxy().registerChannel(config.getChannel());
-            getProxy().registerChannel("BungeeCord");
         } catch (Exception err) {
             getLogger().severe("Unable to load the configuration. The plugin won't respond:");
             getLogger().severe(err.getMessage());

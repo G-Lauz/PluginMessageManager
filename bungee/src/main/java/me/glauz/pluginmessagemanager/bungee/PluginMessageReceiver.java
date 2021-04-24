@@ -1,15 +1,11 @@
 package me.glauz.pluginmessagemanager.bungee;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.protocole.ConstructPacketErrorException;
 import me.glauz.pluginmessagemanager.protocole.InvalidPacketException;
 import me.glauz.pluginmessagemanager.protocole.Packet;
 import me.glauz.pluginmessagemanager.protocole.Protocole;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.Connection;
+
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -17,7 +13,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 
 public class PluginMessageReceiver implements Listener {
@@ -64,14 +59,11 @@ public class PluginMessageReceiver implements Listener {
                 // Handle the action
                 switch (PluginMessageManagerActions.valueOf(action)) {
                     case BROADCAST:
-                        // TODO
-                        System.out.println("#1 The receiver is a ProxiedPlayer:");
-                        System.out.println(packet.data);
                         onBroadcast((Server) event.getSender(), packet);
                         break;
 
                     default:
-                        throw new Exception("Non-existent action");
+                        throw new Exception("Non-existent action: " + action);
                 }
             }
 
@@ -96,18 +88,18 @@ public class PluginMessageReceiver implements Listener {
     }
 
     private void onBroadcast(Server sender, Packet packet) {
-        System.out.println(sender.getInfo().getName());
-
         this.plugin.getConfig().getGroup().forEach((serverGroup, servers) -> {
             if (serverGroup.equals(packet.serversGroup)) {
                 ((ArrayList) servers).forEach(server -> {
-                    try {
-                        this.plugin.getProxy().getServerInfo((String) server).sendData(
-                                this.plugin.getConfig().getChannel(), Protocole.constructPacket(packet));
-                    } catch (InvalidPacketException e) {
-                        e.printStackTrace();
-                    } catch (ConstructPacketErrorException e) {
-                        e.printStackTrace();
+                    if (!server.equals(sender.getInfo().getName())) {
+                        try {
+                            this.plugin.getProxy().getServerInfo((String) server).sendData(
+                                    this.plugin.getConfig().getChannel(), Protocole.constructPacket(packet));
+                        } catch (InvalidPacketException e) {
+                            e.printStackTrace();
+                        } catch (ConstructPacketErrorException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }

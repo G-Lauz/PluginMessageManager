@@ -3,6 +3,7 @@ package me.glauz.pluginmessagemanager.api;
 import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
 import me.glauz.pluginmessagemanager.config.LoadConfigFileException;
+import me.glauz.pluginmessagemanager.misc.Callback;
 import me.glauz.pluginmessagemanager.protocole.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -17,11 +18,14 @@ import static org.bukkit.Bukkit.getServer;
 public class PluginMessageReceiver implements PluginMessageListener {
 
     private static PluginMessageReceiver instance;
+
     private Plugin plugin;
     private String channel;
 
-    private PluginMessageReceiver() {
+    private Callback onBroadcastReceived;
 
+    private PluginMessageReceiver() {
+        this.onBroadcastReceived = null;
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -73,8 +77,17 @@ public class PluginMessageReceiver implements PluginMessageListener {
             packet.params.forEach(param -> System.out.println("\t" + param));
             System.out.println("Data: " + packet.data);
 
-            if (packet.serversGroup.equalsIgnoreCase("MySubChannel")) {
-                // TODO
+            String action = packet.params.get(0);
+            switch (PluginMessageManagerActions.valueOf(action)) {
+                case BROADCAST:
+                    if (this.onBroadcastReceived != null) {
+                        this.onBroadcastReceived.call(packet.data);
+                    }
+                    break;
+
+                default:
+                    getLogger().warning("Received unhandle action: " + action);
+                    getLogger().warning("Be sure that the API and the PluginMessageManager on BungeeCord are up to date.");
             }
 
         } catch (DeconstructPacketErrorException deconstructPacketErrorException) {
@@ -102,5 +115,9 @@ public class PluginMessageReceiver implements PluginMessageListener {
         packet.data = message;
 
         this.sendPluginMessage(player, packet);
+    }
+
+    public void setOnBroadcastReceived(Callback onBroadcastReceived) {
+        this.onBroadcastReceived = onBroadcastReceived;
     }
 }
