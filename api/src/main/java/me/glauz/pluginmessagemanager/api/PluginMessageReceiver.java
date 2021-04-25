@@ -1,9 +1,9 @@
 package me.glauz.pluginmessagemanager.api;
 
+import me.glauz.pluginmessagemanager.actions.ActionsHandler;
 import me.glauz.pluginmessagemanager.actions.PluginMessageManagerActions;
 import me.glauz.pluginmessagemanager.config.GlobalConfig;
 import me.glauz.pluginmessagemanager.config.LoadConfigFileException;
-import me.glauz.pluginmessagemanager.misc.Callback;
 import me.glauz.pluginmessagemanager.protocole.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,10 +22,10 @@ public class PluginMessageReceiver implements PluginMessageListener {
     private Plugin plugin;
     private String channel;
 
-    private Callback onBroadcastReceived;
+    private ActionsHandler actionsHandler;
 
     private PluginMessageReceiver() {
-        this.onBroadcastReceived = null;
+        this.actionsHandler = null;
     }
 
     public static PluginMessageReceiver getInstance() {
@@ -40,27 +40,41 @@ public class PluginMessageReceiver implements PluginMessageListener {
     public void initialize(Plugin plugin) throws IOException, LoadConfigFileException{
         this.plugin = plugin;
 
-        checkIfBungee();
-        if (!getServer().getPluginManager().isPluginEnabled(this.plugin)) {
-            return;
-        }
-
-        // load global's configuration
-        GlobalConfig globalConfig = GlobalConfig.getInstance();
-        globalConfig.loadConfigFile();
-        this.channel = globalConfig.getChannel();
-
-        getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);
+        if (!checkIfBungee()) return;
+        loadConfig();
+        registerChannel();
     }
 
-    private void checkIfBungee() {
+    public void initialize(Plugin plugin, ActionsHandler actionsHandler) throws IOException, LoadConfigFileException{
+        this.plugin = plugin;
+        this.actionsHandler = actionsHandler;
+
+        if (!checkIfBungee()) return;
+        loadConfig();
+        registerChannel();
+    }
+
+    private boolean checkIfBungee() {
         if (!getServer().spigot().getConfig().getBoolean("settings.bungeecord")) {
             getLogger().severe( "This server is not BungeeCord." );
             getLogger().severe( "If the server is already hooked to BungeeCord, please enable it into your spigot.yml aswell." );
             getLogger().severe( "Plugin disabled!" );
             getServer().getPluginManager().disablePlugin(this.plugin);
+            return false;
         }
+        return true;
+    }
+
+    private void loadConfig() throws IOException, LoadConfigFileException {
+        // load global's configuration
+        GlobalConfig globalConfig = GlobalConfig.getInstance();
+        globalConfig.loadConfigFile();
+        this.channel = globalConfig.getChannel();
+    }
+
+    private void registerChannel() {
+        getServer().getMessenger().registerIncomingPluginChannel(this.plugin, this.channel, this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, this.channel);
     }
 
     @Override
@@ -80,8 +94,8 @@ public class PluginMessageReceiver implements PluginMessageListener {
             String action = packet.params.get(0);
             switch (PluginMessageManagerActions.valueOf(action)) {
                 case BROADCAST:
-                    if (this.onBroadcastReceived != null) {
-                        this.onBroadcastReceived.call(packet.data);
+                    if (this.actionsHandler != null) {
+                        this.actionsHandler.onBroadcastReceived(packet.data);
                     }
                     break;
 
@@ -117,7 +131,7 @@ public class PluginMessageReceiver implements PluginMessageListener {
         this.sendPluginMessage(player, packet);
     }
 
-    public void setOnBroadcastReceived(Callback onBroadcastReceived) {
-        this.onBroadcastReceived = onBroadcastReceived;
+    public void setActionsHandler(ActionsHandler actionsHandler) {
+        this.actionsHandler = actionsHandler;
     }
 }
