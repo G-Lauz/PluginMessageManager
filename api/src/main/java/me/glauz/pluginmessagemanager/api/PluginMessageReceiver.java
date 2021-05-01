@@ -85,12 +85,6 @@ public class PluginMessageReceiver implements PluginMessageListener {
         try {
             Packet packet = Protocole.deconstructPacket(bytes);
 
-            System.out.println("PACKET RECEIVED: ");
-            System.out.println("Server group: " + packet.serversGroup);
-            System.out.println("Params: ");
-            packet.params.forEach(param -> System.out.println("\t" + param));
-            System.out.println("Data: " + packet.data);
-
             String action = packet.params.get(0);
             switch (PluginMessageManagerActions.valueOf(action)) {
                 case BROADCAST:
